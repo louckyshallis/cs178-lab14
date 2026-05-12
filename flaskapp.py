@@ -75,6 +75,21 @@ def viewdb():
 
 
 # TODO: Section 2 — add your /artistquery/<artist_id> route here
+@app.route("/artistquery/<artist_id>")
+def artistquery(artist_id):
+    """
+    Fetches the tracks for the artist following artistquery
+    """
+    rows = execute_query("""
+        SELECT ArtistId, Artist.Name, Track.Name, UnitPrice
+        FROM Artist
+        JOIN Album USING (ArtistID)
+        JOIN Track USING (AlbumID)
+        WHERE Artist == artist_id
+        LIMIT 20
+    """)
+    return display_html(rows)
+
 
 # TODO: Section 3 — add your /pricequerytextbox GET and POST routes here
 
