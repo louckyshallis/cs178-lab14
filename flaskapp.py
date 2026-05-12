@@ -108,6 +108,24 @@ def viewprices(price):
     """, (str(price),))
     return display_html(rows)
 
+@app.route("/timequery/<time>")
+def viewtime(time):
+    """
+    Returns all tracks where UnitPrice matches the given time.
+    Can be called from the URL directly (/timequery/199)
+    or from the POST form handler above.
+    """
+    rows = execute_query("""
+        SELECT ArtistId, Artist.Name, Track.Name, UnitPrice, Milliseconds
+        FROM Artist
+        JOIN Album USING (ArtistID)
+        JOIN Track USING (AlbumID)
+        WHERE Milliseconds >= %s
+        ORDER BY Track.Name
+        LIMIT 500
+    """, (time,))
+    return display_html(rows)
+
 # TODO: Section 3 — add your /pricequerytextbox GET and POST routes here
 @app.route("/pricequerytextbox", methods=['GET'])
 def price_form():
@@ -127,6 +145,14 @@ def price_form_post():
     return viewprices(text)
 
 
+@app.route("/timequerytextbox", methods=['GET'])
+def time_form():
+    return render_template('textbox.html', fieldname="Milliseconds")
+
+@app.route("/timequerytextbox", methods=['POST'])
+def time_form_post():
+    text = request.form['text']
+    return viewtime(text)
 
 # ---------------------------------------------------------------------------
 # Run the app
